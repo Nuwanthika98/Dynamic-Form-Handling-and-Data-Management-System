@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 
 export default function AddDeliveryData() {
     const initialValues = {
@@ -23,7 +24,12 @@ export default function AddDeliveryData() {
     const handleSubmit = (e) => {
         e.preventDefault()
         setFormErrors(validate(formValues))
-        setIsSubmit(true)
+        console.log(formValues)
+        axios.post('http://localhost:5000/api/form/create', formValues)
+        .then((response) => {
+          setIsSubmit(true)
+          console.log(response, response.data)})
+        .catch(err => console.log(err))
     }
 
     useEffect(() => {
@@ -35,6 +41,8 @@ export default function AddDeliveryData() {
 
     const validate = (values) => {
         const errors = {}
+        const postalCodeRegex = /^\d{5}([,-]\d{5})?$/
+
         if (!values.state){
             errors.state = "State is required!"
         }
@@ -46,6 +54,8 @@ export default function AddDeliveryData() {
         }
         if (!values.postalcode){
             errors.postalcode = "Postalcode is required!"
+        }else if (!postalCodeRegex.test(values.postalcode)) {
+          errors.postalcode = "Postal code must be in xxxxx, xxxxx,yyyyy, or xxxxx-yyyyy format"
         }
         if (!values.deliverycost){
             errors.deliverycost = "Delivery cost is required!"
@@ -54,7 +64,13 @@ export default function AddDeliveryData() {
     }
 
   return (
-    <form class="max-w-lg mx-auto" onSubmit={handleSubmit}>
+    <div className="container">
+      { Object.keys(formErrors).length === 0 && isSubmit ? (
+        <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+        <span class="font-medium">Data added successfully!</span>
+        </div> ) : (console.log('Error'))
+      }
+      <form class="max-w-lg mx-auto" onSubmit={handleSubmit}>
       <div class="space-y-12">
         <div class="border-b border-gray-900/10 pb-12">
           <h2 class="text-base font-semibold leading-7 text-gray-900">
@@ -80,6 +96,7 @@ export default function AddDeliveryData() {
                 />
               </div>
             </div>
+            <p>{formErrors.state}</p>
 
             <div class="sm:col-span-full sm:col-start-1">
               <label
@@ -99,6 +116,7 @@ export default function AddDeliveryData() {
                 />
               </div>
             </div>
+            <p>{formErrors.city}</p>
 
             <div class="sm:col-span-full">
               <label
@@ -118,57 +136,60 @@ export default function AddDeliveryData() {
                 />
               </div>
             </div>
+            <p>{formErrors.suburb}</p>
 
             <div class="sm:col-span-full">
               <label
-                for="postal-code"
+                for="postalcode"
                 class="block text-sm font-medium leading-6 text-gray-900">
                 ZIP / Postal code
               </label>
               <div class="mt-2">
                 <input
                   type="text"
-                  name="postal-code"
-                  id="postal-code"
-                  autocomplete="postal-code"
+                  name="postalcode"
+                  id="postalcode"
+                  autocomplete="postalcode"
                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={formValues.postalcode}
                   onChange={handleChange}
                 />
               </div>
             </div>
+            <p>{formErrors.postalcode}</p>
 
             <div class="sm:col-span-full">
               <label
-                for="delivery-cost"
+                for="deliverycost"
                 class="block text-sm font-medium leading-6 text-gray-900">
                 Delivery Cost
               </label>
               <div class="mt-2">
                 <input
                   type="text"
-                  name="delivery-cost"
-                  id="delivery-cost"
-                  autocomplete="delivery-cost"
+                  name="deliverycost"
+                  id="deliverycost"
+                  autocomplete="deliverycost"
                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={formValues.deliverycost}
                   onChange={handleChange}
                 />
               </div>
             </div>
+            <p>{formErrors.deliverycost}</p>
 
             <div class="sm:col-span-full">
               <label
-                for="pickup-cost"
+                for="pickupcost"
                 class="block text-sm font-medium leading-6 text-gray-900">
                 Pickup Cost
               </label>
               <div class="mt-2">
                 <input
                   type="text"
-                  name="pickup-cost"
-                  id="pickup-cost"
-                  autocomplete="pickup-cost"
+                  name="pickupcost"
+                  id="pickupcost"
+                  autocomplete="pickupcost"
                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={formValues.pickupcost}
                   onChange={handleChange}
@@ -193,5 +214,7 @@ export default function AddDeliveryData() {
         </button>
       </div>
     </form>
+    </div>
+    
   );
 }
