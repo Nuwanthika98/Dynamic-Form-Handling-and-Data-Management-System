@@ -138,13 +138,33 @@ module.exports.save = (body) =>
  * @returns {Promise<any>} - The delivery data matching the postal code
  */
 module.exports.findByPostalCode = (model, postalcode) =>
-    new Promise((resolve, reject) => {
-        model
-            .find({ postalcode: postalcode })
-            .then((data) => {
-                resolve(data);
-            })
-            .catch((err) => {
-                reject(err);
-            });
-    });
+  new Promise((resolve, reject) => {
+    model
+      .find({ 'addresses.postalcode': postalcode })
+      .then((data) => {
+        if (!data || !Array.isArray(data)) {
+          return resolve([]);
+        }
+
+        const formattedData = data.map(item => {
+          const address = item.addresses.find(addr => addr.postalcode === postalcode);
+          return {
+            state: item.state,
+            city: address ? address.city : null,
+            suburb: address ? address.suburb : null,
+            deliverycost: item.deliverycost,
+            pickupcost: item.pickupcost
+          };
+        });
+
+        resolve(formattedData);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+
+
+
+
