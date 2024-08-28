@@ -1,12 +1,12 @@
 import React from 'react'
 import AddDeliveryData from '../components/AddDeliveryData'
-import AllData from '../components/AllData'
+import AllRecordsButton from '../components/AllRecordsButton'
 
 const MainPage = () => {
   return (
     <div>
       <AddDeliveryData/>
-      <AllData/>
+      <AllRecordsButton/>
     </div>
   )
 }
