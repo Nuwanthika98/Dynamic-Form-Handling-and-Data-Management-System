@@ -54,7 +54,7 @@ const UpdateDeliveryData = () => {
     if (!values.postalcode) {
       errors.postalcode = "Postalcode is required!";
     } else if (!postalCodeRegex.test(values.postalcode)) {
-      errors.postalcode = "Postal code must be in xxxxx, xxxxx, yyyy, or xxxxx-yyyyy format";
+      errors.postalcode = "Postal code must be in xxxxx, xxxxx-yyyy, or xxxxx,yyyyy format";
     }
     if (!values.deliverycost) {
       errors.deliverycost = "Delivery cost is required!";

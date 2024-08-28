@@ -1,217 +1,137 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
+import { useForm, useFieldArray } from "react-hook-form";
 import axios from 'axios';
 
-export default function AddDeliveryData() {
-    const initialValues = {
-        state: "",
-        city: "",
-        suburb: "",
-        postalcode: "",
-        deliverycost: "",
-        pickupcost: ""
+const AddDeliveryData = () => {
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const { register, handleSubmit, control, reset, formState: { errors } } = useForm({
+    defaultValues: {
+      state: "", 
+      addresses: [{ city: "", suburb: "", postalcode: "" }],
+      deliverycost: "", 
+      pickupcost: "" 
     }
-    const [formValues, setFormValues] = useState(initialValues)
-    const [formErrors, setFormErrors] = useState({})
-    const [isSubmit, setIsSubmit] = useState(false)
+  });
 
-    const handleChange = (e) => {
-        console.log(e.target)
-        const {name, value} = e.target
-        setFormValues({...formValues, [name]: value})
-        console.log(formValues)
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "addresses",
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/form/create', data);
+      console.log(response.data);
+      reset();
+      setSuccessMessage("Data saved successfully!");
+    } catch (error) {
+      console.error('There was an error submitting the form:', error);
     }
-
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        setFormErrors(validate(formValues))
-        console.log(formValues)
-        axios.post('http://localhost:5000/api/form/create', formValues)
-        .then((response) => {
-          setIsSubmit(true)
-          console.log(response, response.data)
-          setFormValues(initialValues);
-        })
-        .catch(err => console.log(err))
-    }
-
-    useEffect(() => {
-        console.log(formErrors)
-        if (Object.keys(formErrors).length === 0 && isSubmit){
-            console.log(formValues)
-        }
-    }, [formErrors])
-
-    const validate = (values) => {
-        const errors = {}
-        const postalCodeRegex = /^\d{5}([,-]\d{5})?$/
-
-        if (!values.state){
-            errors.state = "State is required!"
-        }
-        if (!values.city){
-            errors.city = "City is required!"
-        }
-        if (!values.suburb){
-            errors.suburb = "Suburb is required!"
-        }
-        if (!values.postalcode){
-            errors.postalcode = "Postalcode is required!"
-        }else if (!postalCodeRegex.test(values.postalcode)) {
-          errors.postalcode = "Postal code must be in xxxxx, xxxxx,yyyyy, or xxxxx-yyyyy format"
-        }
-        if (!values.deliverycost){
-            errors.deliverycost = "Delivery cost is required!"
-        }
-        return errors
-    }
+  };
 
   return (
-    <div className="container">
-      { Object.keys(formErrors).length === 0 && isSubmit ? (
-        <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
-        <span class="font-medium">Data added successfully!</span>
-        </div> ) : (console.log('Error'))
-      }
-      <form class="max-w-lg mx-auto" onSubmit={handleSubmit}>
-      <div class="space-y-12">
-        <div class="border-b border-gray-900/10 pb-12">
-          <h2 class="text-base font-semibold leading-7 text-gray-900">
-            Add Delivery Thresholds
-          </h2>
-
-          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            <div class="col-span-full">
-              <label
-                for="state"
-                class="block text-sm font-medium leading-6 text-gray-900">
-                State
-              </label>
-              <div class="mt-2">
-                <input
-                  type="text"
-                  name="state"
-                  id="state"
-                  autocomplete="state"
-                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    value={formValues.state}
-                    onChange={handleChange}
-                />
-              </div>
-            </div>
-            <p>{formErrors.state}</p>
-
-            <div class="sm:col-span-full sm:col-start-1">
-              <label
-                for="city"
-                class="block text-sm font-medium leading-6 text-gray-900">
-                City
-              </label>
-              <div class="mt-2">
-                <input
-                  type="text"
-                  name="city"
-                  id="city"
-                  autocomplete="city"
-                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  value={formValues.city}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-            <p>{formErrors.city}</p>
-
-            <div class="sm:col-span-full">
-              <label
-                for="suburb"
-                class="block text-sm font-medium leading-6 text-gray-900">
-                Suburb
-              </label>
-              <div class="mt-2">
-                <input
-                  type="text"
-                  name="suburb"
-                  id="suburb"
-                  autocomplete="suburb"
-                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  value={formValues.suburb}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-            <p>{formErrors.suburb}</p>
-
-            <div class="sm:col-span-full">
-              <label
-                for="postalcode"
-                class="block text-sm font-medium leading-6 text-gray-900">
-                ZIP / Postal code
-              </label>
-              <div class="mt-2">
-                <input
-                  type="text"
-                  name="postalcode"
-                  id="postalcode"
-                  autocomplete="postalcode"
-                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  value={formValues.postalcode}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-            <p>{formErrors.postalcode}</p>
-
-            <div class="sm:col-span-full">
-              <label
-                for="deliverycost"
-                class="block text-sm font-medium leading-6 text-gray-900">
-                Delivery Cost
-              </label>
-              <div class="mt-2">
-                <input
-                  type="text"
-                  name="deliverycost"
-                  id="deliverycost"
-                  autocomplete="deliverycost"
-                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  value={formValues.deliverycost}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-            <p>{formErrors.deliverycost}</p>
-
-            <div class="sm:col-span-full">
-              <label
-                for="pickupcost"
-                class="block text-sm font-medium leading-6 text-gray-900">
-                Pickup Cost
-              </label>
-              <div class="mt-2">
-                <input
-                  type="text"
-                  name="pickupcost"
-                  id="pickupcost"
-                  autocomplete="pickupcost"
-                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  value={formValues.pickupcost}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-          </div>
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-3xl font-bold text-gray-800 mb-4">Add a Record</h1>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* State Input */}
+        <div className="form-group">
+          <input
+            {...register("state", { required: "State is required" })}
+            placeholder="State"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state.message}</p>}
         </div>
-      </div>
 
-      <div class="mt-6 flex items-center justify-end gap-x-6">
+        {/* Dynamic Address Fields */}
+        {fields.map((field, index) => (
+          <div key={field.id} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <input
+                {...register(`addresses.${index}.city`, { required: "City is required" })}
+                placeholder="City"
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.addresses?.[index]?.city && <p className="text-red-500 text-sm mt-1">{errors.addresses[index].city.message}</p>}
+
+              <input
+                {...register(`addresses.${index}.suburb`, { required: "Suburb is required" })}
+                placeholder="Suburb"
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.addresses?.[index]?.suburb && <p className="text-red-500 text-sm mt-1">{errors.addresses[index].suburb.message}</p>}
+
+              <input
+                {...register(`addresses.${index}.postalcode`, {
+                  required: "Postal Code is required",
+                  pattern: {
+                    value: /^\d{5}([,-]\d{5})?$/,
+                    message: "Postal code must be in xxxxx, xxxxx-yyyy or xxxxx,yyyyy format"
+                  }
+                })}
+                placeholder="Postal Code"
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.addresses?.[index]?.postalcode && <p className="text-red-500 text-sm mt-1">{errors.addresses[index].postalcode.message}</p>}
+            </div>
+
+            {/* Button to remove this address field */}
+            {fields.length > 1 && (
+              <button
+                type="button"
+                onClick={() => remove(index)}
+                className="text-red-500 hover:text-red-700 text-sm"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
+
+        {/* Button to add a new address field */}
+        <button
+          type="button"
+          onClick={() => append({ city: "", suburb: "", postalcode: "" })}
+          className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
+          Add Another Address
+        </button>
+
+        {/* Delivery Cost Input */}
+        <div className="form-group">
+          <input
+            {...register("deliverycost", { required: "Delivery Cost is required" })}
+            placeholder="Delivery Cost"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {errors.deliverycost && <p className="text-red-500 text-sm mt-1">{errors.deliverycost.message}</p>}
+        </div>
+
+        {/* Pickup Cost Input */}
+        <div className="form-group">
+          <input
+            {...register("pickupcost")}
+            placeholder="Pickup Cost"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {errors.pickupcost && <p className="text-red-500 text-sm mt-1">{errors.pickupcost.message}</p>}
+        </div>
+
+        {/* Submit Button */}
         <button
           type="submit"
-          class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          Save
+          Submit
         </button>
-      </div>
-    </form>
+        {/* Success Message */}
+        {successMessage && (
+                <p className="text-green-500 text-sm mt-4">{successMessage}</p>
+            )}
+      </form>
     </div>
-    
   );
 }
+
+export default AddDeliveryData;
