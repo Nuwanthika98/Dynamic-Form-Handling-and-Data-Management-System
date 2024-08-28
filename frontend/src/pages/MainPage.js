@@ -1,6 +1,5 @@
 import React from "react";
 import AddDeliveryData from "../components/AddDeliveryData";
-import AllRecordsButton from "../components/AllRecordsButton";
 import CustomButton from "../components/CustomButton";
 
 const MainPage = () => {
