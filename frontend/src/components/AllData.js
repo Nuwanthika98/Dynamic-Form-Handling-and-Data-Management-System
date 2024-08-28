@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const AllData = () => {
   const navigate = useNavigate();
   const [records, setRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(""); 
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/api/form/delete/${id}`);
-      setRecords(records.filter(record => record._id !== id));
-      setSuccessMessage("Data deleted successfully!"); 
+      setRecords(records.filter((record) => record._id !== id));
+      setSuccessMessage("Data deleted successfully!");
     } catch (error) {
-      console.error('Error deleting data:', error);
+      console.error("Error deleting data:", error);
       setError(error);
     }
   };
@@ -23,12 +23,12 @@ const AllData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/form/');
+        const response = await axios.get("http://localhost:5000/api/form/");
         const data = response.data.data;
         setRecords(data);
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
         setError(error);
         setIsLoading(false);
       }
@@ -39,34 +39,39 @@ const AllData = () => {
 
   return (
     <div className="flex flex-col justify-center items-center mt-10">
-      <button
-        type="button"
-        className="rounded-md bg-indigo-600 px-10 py-4 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        onClick={() => navigate("/")}
-      >
-        Back
-      </button>
       <div className="mt-6 w-full max-w-4xl">
         {isLoading && <p>Loading...</p>}
         {error && <p className="text-red-500">Error: {error.message}</p>}
-        
+
         <h1 className="text-3xl font-bold text-gray-800 mb-4">All Records</h1>
         {records.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">State</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Addresses</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivery Cost</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pickup Cost</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    State
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Addresses
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Delivery Cost
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Pickup Cost
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {records.map((record) => (
                   <tr key={record._id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{record.state}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {record.state}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {record.addresses.map((address, index) => (
                         <div key={index} className="mb-2">
@@ -76,8 +81,12 @@ const AllData = () => {
                         </div>
                       ))}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.deliverycost}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.pickupcost || 'N/A'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {record.deliverycost}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {record.pickupcost || "N/A"}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
                         type="button"
@@ -103,7 +112,10 @@ const AllData = () => {
           !isLoading && <p>No records found.</p>
         )}
         {successMessage && (
-          <div className="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50" role="alert">
+          <div
+            className="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50"
+            role="alert"
+          >
             <span className="font-medium">{successMessage}</span>
           </div>
         )}
