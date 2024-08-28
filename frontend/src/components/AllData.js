@@ -7,14 +7,13 @@ const AllData = () => {
   const [records, setRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(""); // Added state for success message
+  const [successMessage, setSuccessMessage] = useState(""); 
 
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/api/form/delete/${id}`);
-      // Remove the deleted record from the state
       setRecords(records.filter(record => record._id !== id));
-      setSuccessMessage("Data deleted successfully!"); // Set success message
+      setSuccessMessage("Data deleted successfully!"); 
     } catch (error) {
       console.error('Error deleting data:', error);
       setError(error);
