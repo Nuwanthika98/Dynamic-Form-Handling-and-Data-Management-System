@@ -53,10 +53,15 @@ const Search = () => {
 
   return (
     <div className="p-4 max-w-lg mx-auto">
-      <h2 className="text-3xl font-bold text-gray-800 mb-4">Search Delivery Thresholds</h2>
+      <h2 className="text-3xl font-bold text-gray-800 mb-4">
+        Search Delivery Thresholds
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="postalcode" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="postalcode"
+            className="block text-sm font-medium text-gray-700"
+          >
             ZIP / Postal code
           </label>
           <input
@@ -85,7 +90,8 @@ const Search = () => {
           {deliveryData.map((data, index) => (
             <div key={index} className="mt-2">
               <p>
-                For <strong>{data.suburb || "N/A"}</strong> in <strong>{data.city || "N/A"}</strong>,{" "}
+                For <strong>{data.suburb || "N/A"}</strong> in{" "}
+                <strong>{data.city || "N/A"}</strong>,{" "}
                 <strong>{data.state || "N/A"}</strong>
               </p>
               <p>
@@ -98,13 +104,7 @@ const Search = () => {
           ))}
         </div>
       )}
-      <button
-        type="button"
-        onClick={() => navigate("/")}
-        className="mt-4 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500"
-      >
-        Back
-      </button>
+      
     </div>
   );
 };
