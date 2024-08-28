@@ -5,12 +5,12 @@ import { useNavigate } from "react-router-dom";
 const Search = () => {
   const [postalcode, setPostalcode] = useState("");
   const [formErrors, setFormErrors] = useState({});
-  const [deliveryData, setDeliveryData] = useState([]); // Store delivery data as an array
-  const [noDataMessage, setNoDataMessage] = useState(""); // Message for no data case
+  const [deliveryData, setDeliveryData] = useState([]); 
+  const [noDataMessage, setNoDataMessage] = useState(""); 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setPostalcode(e.target.value); // Update postal code value directly
+    setPostalcode(e.target.value); 
   };
 
   const handleSubmit = (e) => {
@@ -18,24 +18,23 @@ const Search = () => {
     const errors = validate(postalcode);
     setFormErrors(errors);
     if (Object.keys(errors).length === 0) {
-      // Use GET request to match the backend route
+      
       axios
         .get(`http://localhost:5000/api/form/search/${postalcode}`)
         .then((response) => {
-          // Check if response contains data
           if (response.data && response.data.data && response.data.data.length > 0) {
-            setDeliveryData(response.data.data); // Store the response data array
-            setNoDataMessage(""); // Clear any previous no data message
+            setDeliveryData(response.data.data); 
+            setNoDataMessage(""); 
           } else {
-            setDeliveryData([]); // Clear previous data
-            setNoDataMessage("No data on search!"); // Set no data message
+            setDeliveryData([]); 
+            setNoDataMessage("No data on search!"); 
           }
           setPostalcode("");
           console.log("Search executed successfully:", response.data);
         })
         .catch((err) => {
-          setDeliveryData([]); // Clear previous data
-          setNoDataMessage("No data on search!"); // Set no data message on error
+          setDeliveryData([]); 
+          setNoDataMessage("No data on search!"); 
           setPostalcode("");
           console.log(err);
         });
